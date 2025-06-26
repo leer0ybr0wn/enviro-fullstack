@@ -1,0 +1,71 @@
+@import './base.css';
+/* @import './variables.css'; */
+body {
+	background-color: #eee;
+}
+
+header,
+main,
+footer {
+	padding: 1rem 0.5rem;
+	text-align: center;
+}
+
+header,
+footer {
+	background-color: #ddd;
+}
+
+.charts {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+.charts > .chart-container {
+	width: 100%;
+}
+
+.chart {
+	max-height: calc(100vh - 2rem);
+	width: 100%;
+	height: 20rem;
+}
+
+.current-values {
+	display: flex;
+	justify-content: center;
+	gap: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.current-values h5,
+.current-values .small {
+	opacity: 0.5;
+	font-weight: 600;
+}
+
+.small {
+	font-size: 0.75em;
+}
+
+@media (min-width: 960px) {
+	.charts {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.charts > .chart-container {
+		width: calc(50% - 1rem);
+		background-color: #fff;
+		border-radius: 0.5rem;
+		padding: 0.5rem;
+	}
+
+	header,
+	main,
+	footer {
+		padding: 1rem;
+		text-align: center;
+	}
+}

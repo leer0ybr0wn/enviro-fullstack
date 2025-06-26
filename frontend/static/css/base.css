@@ -1,0 +1,155 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	min-height: 100vh;
+
+	transition:
+		color 0.5s,
+		background-color 0.5s;
+	font-family:
+		Inter,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Helvetica Neue',
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		'Fira Sans',
+		'Droid Sans',
+		sans-serif;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* prettier-ignore */
+img, svg, video {
+	max-width: 100%;
+	height: auto;
+}
+
+/* prettier-ignore */
+h1, h2, h3, h4, h5, h6 {
+	margin-block: 0;
+}
+
+ul:not(.text-list) {
+	list-style-type: none;
+	padding-left: 0;
+}
+
+p {
+	margin-top: 0;
+}
+
+hr {
+	background-color: var(--black10);
+	margin-block: 2rem;
+}
+
+button {
+	font-size: 1rem;
+	padding: 0.5rem;
+	color: var(--black75);
+	background-color: transparent;
+	cursor: pointer;
+	font-family: unset;
+}
+
+button:disabled {
+	opacity: 0.4;
+}
+
+.btn {
+	box-shadow: 0 4px 4px var(--black15);
+	border-radius: 0.5rem;
+	background-color: #fff;
+}
+
+.btn:active {
+	box-shadow: none;
+}
+
+.btn-main {
+	display: inline-block;
+	color: #fff;
+	background-color: var(--tnc-blue);
+	font-size: 1.25rem;
+	text-decoration: none;
+	padding: 0.5rem 1.5rem;
+	border-radius: 2rem;
+	&:hover,
+	&:active {
+		filter: brightness(1.25);
+	}
+}
+
+input:not([type='radio']),
+textarea {
+	background-color: var(--black08);
+	padding: 0.5rem;
+	display: block;
+	width: 100%;
+	font-size: 1rem;
+	min-height: 40px;
+	border: solid 1px var(--black10);
+	border-radius: 0.25rem;
+	transition: all 0.2s ease-in-out;
+	scroll-padding-top: 1rem;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+input:-webkit-autofill {
+	border-color: var(--tnc-blue-15);
+}
+
+select {
+	background-color: var(--black08);
+	padding: 0.5rem;
+	display: block;
+	height: 40px;
+	min-height: 40px;
+	border: solid 2px transparent;
+	border-radius: 0.5rem;
+	transition: all 0.2s ease-in-out;
+	scroll-padding-top: 1rem;
+}
+
+.form-group {
+	margin-bottom: 1.25rem;
+	position: relative;
+	text-align: left;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.5rem;
+	opacity: 0.75;
+}
+
+input:focus-visible,
+input:active,
+select:focus-visible,
+select:active,
+textarea:focus-visible,
+textarea:active {
+	background-color: #fff;
+	border: solid 2px var(--tnc-blue-50);
+	outline: none;
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/enviro.css" />
+		<title>PiZero Enviro Data</title>
+	</head>
+
+	<body>
+		<header>
+			<h1>PiZero Enviro Data</h1>
+		</header>
+
+		<main>
+			<section class="current-values">
+				<div>
+					<h3>
+						<span id="curr_temp">-</span>
+						<span class="small opacity-75">&deg;c</span>
+					</h3>
+					<h5 class="opacity-75">Temperature</h5>
+				</div>
+				<div>
+					<h3>
+						<span id="curr_humidity">-</span>
+						<span class="small opacity-75">%</span>
+					</h3>
+					<h5 class="opacity-75">Humidity</h5>
+				</div>
+				<div>
+					<h3>
+						<span id="curr_pressure">-</span>
+						<span class="small opacity-75">hPa</span>
+					</h3>
+					<h5 class="opacity-75">Pressure</h5>
+				</div>
+				<div>
+					<h3>
+						<span id="curr_light">-</span>
+						<span class="small opacity-75">lux</span>
+					</h3>
+					<h5 class="opacity-75">Light</h5>
+				</div>
+			</section>
+
+			<section class="charts">
+				<div class="chart-container">
+					<canvas class="chart" id="temp_chart"></canvas>
+				</div>
+				<div class="chart-container">
+					<canvas class="chart" id="humidity_chart"></canvas>
+				</div>
+				<div class="chart-container">
+					<canvas class="chart" id="pressure_chart"></canvas>
+				</div>
+				<div class="chart-container">
+					<canvas class="chart" id="light_chart"></canvas>
+				</div>
+			</section>
+		</main>
+
+		<footer>&copy; <span id="year"></span> Lee Taylor</footer>
+
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>
