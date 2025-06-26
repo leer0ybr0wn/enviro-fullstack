@@ -132,8 +132,8 @@ const charts = {
 
 async function getData() {
 	try {
-		const response = await fetch(api_url + '?limit=all')
-		// const response = await fetch(api_url)
+		// const response = await fetch(api_url + '?limit=1week')
+		const response = await fetch(api_url)
 		const json = await response.json()
 
 		json.forEach((entry) => {

@@ -2,13 +2,12 @@
 
 $cred = json_decode(file_get_contents(__DIR__ . '/credentials.json'), true);
 
-// Database credentials
+// DB credentials
 $host = 'localhost';
 $db_name = $cred['db_name'];
 $db_user = $cred['db_user'];
 $db_pass = $cred['db_pass'];
 
-// Connect to MariaDB
 $mysqli = new mysqli($host, $db_user, $db_pass, $db_name);
 if ($mysqli->connect_error) {
     http_response_code(500);
@@ -16,41 +15,66 @@ if ($mysqli->connect_error) {
     exit;
 }
 
-// Only allow GET requests
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
     echo json_encode(['error' => 'Only GET requests are allowed']);
     exit;
 }
 
-$limit_param = $_GET['limit'] ?? '100';
+// Define parameters
+$param = $_GET['limit'] ?? '24hr';
 
-if (strtolower($limit_param) === 'all') {
-    $limit_sql = "";
-} else {
-    $limit = (int)$limit_param;
-    if ($limit < 1 || $limit > 10000) {
-        $limit = 100;
-    }
-    $limit_sql = "LIMIT $limit";
+$intervals = [
+    '1hr'    => ['seconds' => 3600,     'step' => 60],   // 1 min
+    '24hr'   => ['seconds' => 86400,    'step' => 300],  // 5 min
+    '1week'  => ['seconds' => 604800,   'step' => 900],  // 15 min
+    '1month' => ['seconds' => 2592000,  'step' => 3600], // 1 hr
+    '1year'  => ['seconds' => 31536000, 'step' => 21600],// 6 hrs
+    'all'    => ['seconds' => null,     'step' => 43200],// 12 hrs
+];
+
+if (!isset($intervals[$param])) {
+    $param = '24hr';
 }
 
-// Prepare and execute query
-$query = "SELECT unix_ts, temp, humidity, pressure, light FROM readings ORDER BY id DESC $limit_sql";
+$range = $intervals[$param]['seconds'];
+$bucket = $intervals[$param]['step'];
+
+$now = time();
+$start = $range ? ($now - $range) : 0;
+
+// SQL query
+$query = "
+    SELECT
+        FLOOR(unix_ts / $bucket) * $bucket AS bucket_ts,
+        AVG(temp)     AS temp,
+        AVG(humidity) AS humidity,
+        AVG(pressure) AS pressure,
+        AVG(light)    AS light
+    FROM readings
+    " . ($param !== 'all' ? "WHERE unix_ts >= $start" : "") . "
+    GROUP BY bucket_ts
+    ORDER BY bucket_ts ASC
+";
+
 $result = $mysqli->query($query);
+
+if (!$result) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Query failed']);
+    exit;
+}
 
 $data = [];
 while ($row = $result->fetch_assoc()) {
     $data[] = [
-        'unix'     => (int) $row['unix_ts'],
-        'temp'     => (float) $row['temp'],
-        'humidity' => (float) $row['humidity'],
-        'pressure' => (float) $row['pressure'],
-        'light'    => (float) $row['light']
+        'unix'     => (int) $row['bucket_ts'],
+        'temp'     => round((float) $row['temp'], 2),
+        'humidity' => round((float) $row['humidity'], 2),
+        'pressure' => round((float) $row['pressure'], 2),
+        'light'    => round((float) $row['light'], 2),
     ];
 }
 
-// Reverse the data to appear in chronological order
-$data = array_reverse($data);
 echo json_encode($data);
 $mysqli->close();
