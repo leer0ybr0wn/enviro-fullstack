@@ -1,76 +1,19 @@
 /* Brand colours and global vars: */
 
 :root {
-	--tnc-blue: #312183;
-	--tnc-blue-purple: #5b1b67;
-	--tnc-purple: #86154a;
-	--tnc-red-purple: #b00e2e;
-	--tnc-red: #da0812;
-
-	/* Solid tints and shades: */
-
-	--tnc-blue-500: #80bcd1;
-	--tnc-blue-600: #888;
-	--tnc-blue-700: #888;
-	--tnc-blue-800: #888;
-	--tnc-blue-900: #b7d7e5;
-	--tnc-blue-950: #d4e7ef;
-	--tnc-blue-xxl: #e2eff5;
-
-	--tnc-blue-purple-600: #7c4985;
-	--tnc-blue-purple-900: #ded1e1;
-	--tnc-blue-purple-950: #efe8f0;
-
-	--tnc-purple-600: #9e446e;
-	--tnc-purple-900: #e7d0db;
-	--tnc-purple-950: #f3e8ed;
-
-	--tnc-red-purple-300: #6a081c;
-	--tnc-red-purple-400: #8d0b25;
-	--tnc-red-purple-600: #c03e58;
-	--tnc-red-purple-700: #d06e82;
-	--tnc-red-purple-800: #df9fab;
-	--tnc-red-purple-900: #efcfd5;
-	--tnc-red-purple-950: #f7e7ea;
-
-	--tnc-red-900: #f7c8ca;
-	--tnc-red-950: #fbe3e4;
+	--brand-blue: #312183;
+	--brand-blue-purple: #5b1b67;
+	--brand-purple: #86154a;
+	--brand-red-purple: #b00e2e;
+	--brand-red: #da0812;
 
 	/* Opacity percentages: */
 
-	--tnc-blue-10: #3121831a;
-	--tnc-blue-purple-10: #5b1b671a;
-	--tnc-purple-10: #86154a1a;
-	--tnc-red-purple-10: #b00e2e1a;
-	--tnc-red-10: #da08121a;
-
-	--tnc-blue-15: #31218326;
-	--tnc-blue-purple-15: #5b1b6726;
-	--tnc-purple-15: #86154a26;
-	--tnc-red-purple-15: #b00e2e26;
-	--tnc-red-15: #da081226;
-
-	--tnc-blue-25: #31218344;
-	--tnc-blue-purple-25: #5b1b6744;
-	--tnc-purple-25: #86154a44;
-	--tnc-red-purple-25: #b00e2e44;
-	--tnc-red-25: #da081244;
-
-	--tnc-blue-50: #31218380;
-	--tnc-blue-purple-50: #5b1b6780;
-	--tnc-purple-50: #86154a80;
-	--tnc-red-purple-50: #b00e2e80;
-	--tnc-red-50: #da081280;
-
-	--tnc-blue-75: #312183c0;
-	--tnc-blue-purple-75: #5b1b67c0;
-	--tnc-purple-75: #86154ac0;
-	--tnc-red-purple-75: #b00e2ec0;
-	--tnc-red-75: #da0812c0;
-
-	--tnc-blue-900-25: rgb(183, 215, 229, 0.25);
-	--tnc-blue-xxl-50: rgb(226, 239, 245, 0.5);
-	--tnc-blue-xxl-60: rgb(226, 239, 245, 0.6);
+	--brand-red-10: #da08121a;
+	--brand-red-15: #da081226;
+	--brand-red-25: #da081244;
+	--brand-red-50: #da081280;
+	--brand-red-75: #da0812c0;
 
 	/* Monochrome: */
 

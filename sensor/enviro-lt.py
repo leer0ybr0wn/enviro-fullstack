@@ -116,7 +116,8 @@ def get_cpu_temperature():
 
 def correct_humidity(humidity, corr_temperature):
     dewpoint = corr_temperature - ((100 - humidity) / 5)
-    corr_humidity = 100 - (5 * (corr_temperature - dewpoint)) + humidity_offset
+    # corr_humidity = 100 - (5 * (corr_temperature - dewpoint)) + humidity_offset
+    corr_humidity = 100 - (4 * (corr_temperature - dewpoint))
     return max(0, min(100, corr_humidity))
 
 
@@ -254,9 +255,9 @@ min_temp = None
 max_temp = None
 
 cpu_temps = [get_cpu_temperature()] * 5
-factor = 1.5
+factor = 2
 temp_offset = 0
-humidity_offset = 20
+humidity_offset = 15
 
 # Set up light sensor
 ltr559 = LTR559()

@@ -9,58 +9,67 @@
 
 	<body>
 		<header>
-			<h1>PiZero Enviro Data</h1>
+			<h1>PiZero Enviro</h1>
+			<div>26/06/25 22:55</div>
 		</header>
 
 		<main>
-			<section class="current-values">
-				<div>
-					<h3>
-						<span id="curr_temp">-</span>
-						<span class="small opacity-75">&deg;c</span>
-					</h3>
-					<h5 class="opacity-75">Temperature</h5>
-				</div>
-				<div>
-					<h3>
-						<span id="curr_humidity">-</span>
-						<span class="small opacity-75">%</span>
-					</h3>
-					<h5 class="opacity-75">Humidity</h5>
-				</div>
-				<div>
-					<h3>
-						<span id="curr_pressure">-</span>
-						<span class="small opacity-75">hPa</span>
-					</h3>
-					<h5 class="opacity-75">Pressure</h5>
-				</div>
-				<div>
-					<h3>
-						<span id="curr_light">-</span>
-						<span class="small opacity-75">lux</span>
-					</h3>
-					<h5 class="opacity-75">Light</h5>
-				</div>
+			<section class="controls">
+				<div>refresh</div>
+				<div>dark/light toggle</div>
+				<div>time range dropdown</div>
 			</section>
 
 			<section class="charts">
 				<div class="chart-container">
+					<div class="chart-title">
+						<h3>Temperature</h3>
+						<div>
+							<h3 id="curr_temp">-</h3>
+							<span class="font-small">&deg;c</span>
+						</div>
+					</div>
 					<canvas class="chart" id="temp_chart"></canvas>
 				</div>
+
 				<div class="chart-container">
+					<div class="chart-title">
+						<h3>Humidity</h3>
+						<div>
+							<h3 id="curr_humidity">-</h3>
+							<span class="font-small">%</span>
+						</div>
+					</div>
 					<canvas class="chart" id="humidity_chart"></canvas>
 				</div>
+
 				<div class="chart-container">
+					<div class="chart-title">
+						<h3>Pressure</h3>
+						<div>
+							<h3 id="curr_pressure">-</h3>
+							<span class="font-small">hPa</span>
+						</div>
+					</div>
 					<canvas class="chart" id="pressure_chart"></canvas>
 				</div>
+
 				<div class="chart-container">
+					<div class="chart-title">
+						<h3>Light</h3>
+						<div>
+							<h3 id="curr_light">-</h3>
+							<span class="font-small">lux</span>
+						</div>
+					</div>
 					<canvas class="chart" id="light_chart"></canvas>
 				</div>
 			</section>
 		</main>
 
-		<footer>&copy; <span id="year"></span> Lee Taylor</footer>
+		<footer>
+			<div>&copy; <span id="year"></span> Lee Taylor</div>
+		</footer>
 
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>

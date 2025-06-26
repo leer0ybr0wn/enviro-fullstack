@@ -8,6 +8,29 @@ const currHumid = document.querySelector('#curr_humidity')
 const currPres = document.querySelector('#curr_pressure')
 const currLight = document.querySelector('#curr_light')
 
+Chart.defaults.plugins.legend.display = false
+Chart.defaults.plugins.tooltip.callbacks.title = function (context) {
+	const date = new Date(context[0].parsed.x)
+	return date
+		.toLocaleString('en-GB', {
+			day: '2-digit',
+			month: 'short',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: false,
+		})
+		.replace(',', ' -')
+}
+
+const xScaleOptions = {
+	type: 'time',
+	time: {
+		unit: 'minute',
+		displayFormats: { minute: 'HH:mm' },
+	},
+}
+
 const data = {
 	temp: {
 		datasets: [
@@ -57,23 +80,8 @@ const config = {
 		data: data.temp,
 		options: {
 			scales: {
-				x: {
-					type: 'time',
-					time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } },
-					// ticks: {
-					// 	stepSize: 30,
-					// },
-				},
-				y: {
-					min: 20,
-					max: 30,
-					// title: { display: true, text: 'Temperature (°C)' },
-				},
-			},
-			plugins: {
-				chartArea: {
-					backgroundColor: 'white',
-				},
+				x: xScaleOptions,
+				y: { grace: '10%' },
 			},
 		},
 	},
@@ -82,15 +90,8 @@ const config = {
 		data: data.humidity,
 		options: {
 			scales: {
-				x: {
-					type: 'time',
-					time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } },
-				},
-				y: {
-					min: 45,
-					max: 65,
-					// title: { display: true, text: 'Humidity (%)' },
-				},
+				x: xScaleOptions,
+				y: { grace: '10%' },
 			},
 		},
 	},
@@ -99,12 +100,8 @@ const config = {
 		data: data.pressure,
 		options: {
 			scales: {
-				x: { type: 'time', time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } } },
-				y: {
-					// min: 980,
-					// max: 1020,
-					// title: { display: true, text: 'Pressure (hPa)' },
-				},
+				x: xScaleOptions,
+				y: { grace: '10%' },
 			},
 		},
 	},
@@ -113,10 +110,10 @@ const config = {
 		data: data.light,
 		options: {
 			scales: {
-				x: { type: 'time', time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } } },
+				x: xScaleOptions,
 				y: {
 					min: 0,
-					// title: { display: true, text: 'Light (lux)' },
+					grace: '10%',
 				},
 			},
 		},
@@ -132,8 +129,8 @@ const charts = {
 
 async function getData() {
 	try {
-		// const response = await fetch(api_url + '?limit=1week')
-		const response = await fetch(api_url)
+		const response = await fetch(api_url + '?limit=1week')
+		// const response = await fetch(api_url)
 		const json = await response.json()
 
 		json.forEach((entry) => {

@@ -1,6 +1,9 @@
 @import './base.css';
-/* @import './variables.css'; */
+@import './variables.css';
+@import './utils.css';
+
 body {
+	color: var(--black75);
 	background-color: #eee;
 }
 
@@ -8,12 +11,14 @@ header,
 main,
 footer {
 	padding: 1rem 0.5rem;
-	text-align: center;
 }
 
 header,
 footer {
 	background-color: #ddd;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .charts {
@@ -32,21 +37,29 @@ footer {
 	height: 20rem;
 }
 
-.current-values {
+.chart-title {
 	display: flex;
-	justify-content: center;
-	gap: 1.5rem;
+	justify-content: space-between;
+	margin-bottom: 0.75rem;
+}
+
+.chart-title > div {
+	display: flex;
+	align-items: baseline;
+}
+
+.chart-title .font-small {
+	opacity: 0.75;
+	margin-left: 0.25rem;
+}
+
+.controls {
+	display: flex;
+	color: var(--white75);
+	background-color: var(--grey-xd);
+	padding: 0.5rem;
 	margin-bottom: 1rem;
-}
-
-.current-values h5,
-.current-values .small {
-	opacity: 0.5;
-	font-weight: 600;
-}
-
-.small {
-	font-size: 0.75em;
+	border-radius: 0.5rem;
 }
 
 @media (min-width: 960px) {
@@ -59,13 +72,12 @@ footer {
 		width: calc(50% - 1rem);
 		background-color: #fff;
 		border-radius: 0.5rem;
-		padding: 0.5rem;
+		padding: 0.75rem;
 	}
 
 	header,
 	main,
 	footer {
 		padding: 1rem;
-		text-align: center;
 	}
 }
