@@ -114,10 +114,10 @@ def get_cpu_temperature():
     return temp
 
 
-def correct_humidity(humidity, corr_temperature):
+def correct_humidity(humidity, temperature, corr_temperature):
     dewpoint = corr_temperature - ((100 - humidity) / 5)
     # corr_humidity = 100 - (5 * (corr_temperature - dewpoint)) + humidity_offset
-    corr_humidity = 100 - (4 * (corr_temperature - dewpoint))
+    corr_humidity = 100 - (3.5 * (corr_temperature - dewpoint))
     return max(0, min(100, corr_humidity))
 
 
@@ -194,9 +194,9 @@ def describe_humidity(humidity):
 
 def describe_light(light):
     """Convert light level in lux to descriptive value."""
-    if light < 50:
+    if light < 20:
         description = "dark"
-    elif 50 <= light < 100:
+    elif 20 <= light < 100:
         description = "dim"
     elif 100 <= light < 500:
         description = "light"
@@ -257,7 +257,7 @@ max_temp = None
 cpu_temps = [get_cpu_temperature()] * 5
 factor = 2
 temp_offset = 0
-humidity_offset = 15
+humidity_offset = 18
 
 # Set up light sensor
 ltr559 = LTR559()
@@ -321,7 +321,7 @@ while True:
 
     # Humidity
     humidity = bme280.get_humidity()
-    corr_humidity = correct_humidity(humidity, corr_temperature)
+    corr_humidity = correct_humidity(humidity, temperature, corr_temperature)
     humidity_string = f"{corr_humidity:.0f}%"
     img = overlay_text(img, (68, 48), humidity_string, font_lg, align_right=True)
     _, text_height = text_size(font_lg, humidity_string)

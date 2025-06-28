@@ -1,6 +1,6 @@
 <?php
 
-$cred = json_decode(file_get_contents(__DIR__ . '/credentials.json'), true);
+$cred = json_decode(file_get_contents('/home/lee/enviro/credentials.json'), true);
 
 // DB credentials
 $host = 'localhost';
