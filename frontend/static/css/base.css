@@ -16,22 +16,8 @@ html {
 body {
 	min-height: 100vh;
 
-	transition:
-		color 0.5s,
-		background-color 0.5s;
-	font-family:
-		Inter,
-		-apple-system,
-		BlinkMacSystemFont,
-		'Helvetica Neue',
-		'Segoe UI',
-		Roboto,
-		Oxygen,
-		Ubuntu,
-		Cantarell,
-		'Fira Sans',
-		'Droid Sans',
-		sans-serif;
+	transition: color 0.5s, background-color 0.5s;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -85,71 +71,26 @@ button:disabled {
 	box-shadow: none;
 }
 
-.btn-main {
-	display: inline-block;
-	color: #fff;
-	background-color: var(--tnc-blue);
-	font-size: 1.25rem;
-	text-decoration: none;
-	padding: 0.5rem 1.5rem;
-	border-radius: 2rem;
-	&:hover,
-	&:active {
-		filter: brightness(1.25);
-	}
-}
-
-input:not([type='radio']),
-textarea {
-	background-color: var(--black08);
-	padding: 0.5rem;
-	display: block;
-	width: 100%;
-	font-size: 1rem;
-	min-height: 40px;
-	border: solid 1px var(--black10);
-	border-radius: 0.25rem;
-	transition: all 0.2s ease-in-out;
-	scroll-padding-top: 1rem;
-	appearance: none;
-	-webkit-appearance: none;
-}
-
-input:-webkit-autofill {
-	border-color: var(--tnc-blue-15);
-}
-
 select {
-	background-color: var(--black08);
+	color: inherit;
+	background-color: transparent;
+	font-size: 1rem;
 	padding: 0.5rem;
 	display: block;
 	height: 40px;
 	min-height: 40px;
-	border: solid 2px transparent;
+	border: solid 1px transparent;
 	border-radius: 0.5rem;
-	transition: all 0.2s ease-in-out;
+	outline: none;
 	scroll-padding-top: 1rem;
 }
 
-.form-group {
-	margin-bottom: 1.25rem;
-	position: relative;
-	text-align: left;
+select:hover {
+	border-color: var(--white15);
 }
 
-.form-group label {
-	display: block;
-	margin-bottom: 0.5rem;
-	opacity: 0.75;
-}
-
-input:focus-visible,
-input:active,
 select:focus-visible,
-select:active,
-textarea:focus-visible,
-textarea:active {
-	background-color: #fff;
-	border: solid 2px var(--tnc-blue-50);
+select:active {
+	border: solid 1px var(--white15);
 	outline: none;
 }

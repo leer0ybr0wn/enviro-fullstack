@@ -3,6 +3,14 @@ const api_url = 'http://ras.pi/enviro/api/v1'
 const year = new Date().getFullYear()
 document.querySelector('#year').innerText = year
 
+const toggleButton = document.querySelector('.dark-toggle button')
+const checkbox = document.querySelector('#theme-toggle')
+
+toggleButton.addEventListener('click', () => {
+	checkbox.checked = !checkbox.checked
+	document.documentElement.classList.toggle('dark', checkbox.checked)
+})
+
 const currTemp = document.querySelector('#curr_temp')
 const currHumid = document.querySelector('#curr_humidity')
 const currPres = document.querySelector('#curr_pressure')
@@ -26,8 +34,13 @@ Chart.defaults.plugins.tooltip.callbacks.title = function (context) {
 const xScaleOptions = {
 	type: 'time',
 	time: {
-		unit: 'minute',
-		displayFormats: { minute: 'HH:mm' },
+		displayFormats: {
+			minute: 'HH:mm',
+			hour: 'HH:mm',
+			day: 'dd MMM',
+			week: 'dd MMM',
+			month: 'MMM',
+		},
 	},
 }
 
@@ -112,7 +125,7 @@ const config = {
 			scales: {
 				x: xScaleOptions,
 				y: {
-					min: 0,
+					beginAtZero: true,
 					grace: '10%',
 				},
 			},
@@ -129,13 +142,12 @@ const charts = {
 
 async function getData() {
 	try {
-		// const response = await fetch(api_url + '?limit=1hr')
+		// const response = await fetch(api_url + '?limit=1mo')
 		const response = await fetch(api_url)
 		const json = await response.json()
 
 		json.forEach((entry) => {
 			const timestamp = entry.unix * 1000
-
 			data.temp.datasets[0].data.push({ x: timestamp, y: entry.temp })
 			data.humidity.datasets[0].data.push({ x: timestamp, y: entry.humidity })
 			data.pressure.datasets[0].data.push({ x: timestamp, y: entry.pressure })

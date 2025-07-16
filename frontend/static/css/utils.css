@@ -54,6 +54,10 @@
 	display: flex;
 }
 
+.d-block {
+	display: block;
+}
+
 .fd-col {
 	flex-direction: column;
 }
