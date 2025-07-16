@@ -5,5 +5,15 @@
 	"tabWidth": 4,
 	"useTabs": true,
 	"singleQuote": true,
-	"singleAttributePerLine": false
+	"singleAttributePerLine": false,
+	"plugins": ["prettier-plugin-svelte"],
+	"overrides": [
+		{
+			"files": "*.svelte",
+			"options": {
+				"parser": "svelte"
+			}
+		}
+	],
+	"svelteSortOrder": "markup-scripts-styles"
 }
