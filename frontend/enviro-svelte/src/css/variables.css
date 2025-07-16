@@ -1,0 +1,54 @@
+/* Brand colours and global vars: */
+
+:root {
+	--brand-blue: #312183;
+	--brand-blue-purple: #5b1b67;
+	--brand-purple: #86154a;
+	--brand-red-purple: #b00e2e;
+	--brand-red: #da0812;
+
+	/* Opacity percentages: */
+
+	--brand-red-10: #da08121a;
+	--brand-red-15: #da081226;
+	--brand-red-25: #da081244;
+	--brand-red-50: #da081280;
+	--brand-red-75: #da0812c0;
+
+	/* Monochrome: */
+
+	--black05: rgba(0, 0, 0, 0.05);
+	--black08: rgba(0, 0, 0, 0.08);
+	--black10: rgba(0, 0, 0, 0.1);
+	--black15: rgba(0, 0, 0, 0.15);
+	--black20: rgba(0, 0, 0, 0.2);
+	--black25: rgba(0, 0, 0, 0.25);
+	--black50: rgba(0, 0, 0, 0.5);
+	--black60: rgba(0, 0, 0, 0.6);
+	--black75: rgba(0, 0, 0, 0.75);
+
+	--white05: rgba(255, 255, 255, 0.05);
+	--white10: rgba(255, 255, 255, 0.1);
+	--white15: rgba(255, 255, 255, 0.15);
+	--white20: rgba(255, 255, 255, 0.2);
+	--white25: rgba(255, 255, 255, 0.25);
+	--white33: rgba(255, 255, 255, 0.333);
+	--white50: rgba(255, 255, 255, 0.5);
+	--white60: rgba(255, 255, 255, 0.6);
+	--white75: rgba(255, 255, 255, 0.75);
+	--white80: rgba(255, 255, 255, 0.8);
+	--white90: rgba(255, 255, 255, 0.9);
+
+	--grey-xxl: #eee;
+	--grey-xl: #ddd;
+	--grey-l: #ccc;
+	--grey-mid: #888;
+	--grey-d: #444;
+	--grey-xd: #333;
+	--grey-xxd: #222;
+	--grey-xxxd: #111;
+
+	/* Misc */
+
+	--tile-grad-angle: 40deg;
+}
