@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import LogoRasPi from '/raspi_logo.svg'
 	import IconRefresh from './assets/icons/icon-refresh.svelte'
+	import IconSpinner from './assets/icons/icon-spinner.svelte'
 	import IconSun from './assets/icons/icon-sun.svelte'
 	import IconMoon from './assets/icons/icon-moon.svelte'
 	import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js'
@@ -18,6 +19,11 @@
 	}
 	type DataRecordList = DataRecord[]
 	type DataPoint = { x: number; y: number }
+	type DisplayValues = {
+		current: string
+		low: string
+		high: string
+	}
 
 	Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend)
 	Chart.defaults.plugins.legend.display = false
@@ -38,12 +44,29 @@
 	const api_url = 'http://ras.pi/enviro/api/v1'
 	// const api_url = 'https://api.leeroybrown.uk/enviro'
 	const year = new Date().getFullYear()
-	let darkMode = false
+	const timeRanges = [
+		['1hr', 'Hour'],
+		['24hr', 'Day'],
+		['1wk', 'Week'],
+		['1mo', 'Month'],
+		['1yr', 'Year'],
+		['all', 'All'],
+	]
+	let timeRange = ''
 
-	let currTemp: string
-	let currHumid: string
-	let currPres: string
-	let currLight: string
+	let darkMode = false
+	let loading = false
+
+	const displayVals = {
+		temp: {} as DisplayValues,
+		humidity: {} as DisplayValues,
+		pressure: {} as DisplayValues,
+		light: {} as DisplayValues,
+		lastReading: {
+			date: '',
+			time: '',
+		},
+	}
 
 	let tempCanvas: HTMLCanvasElement
 	let humidCanvas: HTMLCanvasElement
@@ -58,7 +81,7 @@
 	} = {}
 
 	// Chart data and configs as you have them, but use reactive `let` if you want
-	// to keep data reactive you can wrap in $: or stores if needed
+	// To keep data reactive you can wrap in $: or stores if needed
 
 	const xScaleOptions = {
 		type: 'time' as const,
@@ -71,6 +94,10 @@
 				month: 'MMM',
 			},
 		},
+	}
+
+	const animOptions = {
+		duration: 500,
 	}
 
 	const data = {
@@ -99,7 +126,7 @@
 				{
 					label: 'Pressure (hPa)',
 					data: [] as DataPoint[],
-					borderColor: 'mediumseagreen',
+					borderColor: '#b5c',
 					tension: 0.3,
 				},
 			],
@@ -125,6 +152,7 @@
 					x: xScaleOptions,
 					y: { grace: '10%' },
 				},
+				animation: animOptions,
 			},
 		},
 		humidity: {
@@ -135,6 +163,7 @@
 					x: xScaleOptions,
 					y: { grace: '10%' },
 				},
+				animation: animOptions,
 			},
 		},
 		pressure: {
@@ -145,6 +174,7 @@
 					x: xScaleOptions,
 					y: { grace: '10%' },
 				},
+				animation: animOptions,
 			},
 		},
 		light: {
@@ -158,12 +188,14 @@
 						grace: '10%',
 					},
 				},
+				animation: animOptions,
 			},
 		},
 	}
 
 	onMount(() => {
-		darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+		// darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+		// document.documentElement.classList.toggle('dark', darkMode)
 
 		charts = {
 			temp: new Chart(tempCanvas, config.temp),
@@ -175,9 +207,17 @@
 		getData()
 	})
 
-	async function getData() {
+	async function getData(limit?: string) {
+		loading = true
+
+		Object.values(data).forEach((chartData) => {
+			chartData.datasets[0].data = []
+		})
+		Object.values(charts).forEach((chart) => chart?.update())
+
 		try {
-			const response = await fetch(api_url)
+			const url = limit ? api_url + '?limit=' + limit : api_url
+			const response = await fetch(url)
 			const json: DataRecordList = await response.json()
 
 			json.forEach((entry) => {
@@ -188,17 +228,56 @@
 				data.light.datasets[0].data.push({ x: timestamp, y: entry.light })
 			})
 
-			charts.temp?.update()
-			charts.humidity?.update()
-			charts.pressure?.update()
-			charts.light?.update()
+			Object.values(charts).forEach((chart) => chart?.update())
 
-			currTemp = json.at(-1)?.temp.toFixed(1) ?? '-'
-			currHumid = json.at(-1)?.humidity.toFixed(1) ?? '-'
-			currPres = json.at(-1)?.pressure.toFixed(1) ?? '-'
-			currLight = json.at(-1)?.light.toFixed(1) ?? '-'
+			// displayVals.temp.current = json.at(-1)?.temp.toFixed(1) ?? '-'
+			// displayVals.humidity.current = json.at(-1)?.humidity.toFixed(1) ?? '-'
+			// displayVals.pressure.current = json.at(-1)?.pressure.toFixed(1) ?? '-'
+			// displayVals.light.current = json.at(-1)?.light.toFixed(1) ?? '-'
+
+			displayVals.temp = {
+				current: json.at(-1)?.temp.toFixed(1) ?? '-',
+				...getLowHigh(json.map((d) => d.temp)),
+			}
+
+			displayVals.humidity = {
+				current: json.at(-1)?.humidity.toFixed(1) ?? '-',
+				...getLowHigh(json.map((d) => d.humidity)),
+			}
+
+			displayVals.pressure = {
+				current: json.at(-1)?.pressure.toFixed(1) ?? '-',
+				...getLowHigh(json.map((d) => d.pressure)),
+			}
+
+			displayVals.light = {
+				current: json.at(-1)?.light.toFixed(1) ?? '-',
+				...getLowHigh(json.map((d) => d.light)),
+			}
+
+			const latestTimestamp = json.at(-1)?.unix
+
+			if (latestTimestamp) {
+				const dateObj = new Date(latestTimestamp * 1000) // assuming timestamp is in seconds
+				displayVals.lastReading.date = dateObj.toLocaleDateString() // e.g. "17/07/2025"
+				displayVals.lastReading.time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) // e.g. "14:30"
+			} else {
+				displayVals.lastReading.date = '-'
+				displayVals.lastReading.time = '-'
+			}
 		} catch (error) {
 			console.error(error)
+		} finally {
+			loading = false
+		}
+	}
+
+	function getLowHigh(arr: number[]): { low: string; high: string } {
+		const min = Math.min(...arr)
+		const max = Math.max(...arr)
+		return {
+			low: min.toFixed(1),
+			high: max.toFixed(1),
 		}
 	}
 
@@ -209,51 +288,56 @@
 </script>
 
 <header>
-	<div class="d-flex jc-between ai-center p-4">
-		<div class="d-flex ai-center">
-			<img src={LogoRasPi} alt="Raspberry Pi logo" width="20" class="mr-3" />
+	<div class="d-flex jc-between ai-center px-4 py-5">
+		<a href="." class="d-flex ai-center">
+			<img src={LogoRasPi} alt="Raspberry Pi logo" width="18" class="mr-3" />
 			<h1>PiZero Enviro</h1>
+		</a>
+		<div class="d-flex ai-center">
+			<div class="header-date mr-3">{displayVals.lastReading.date}</div>
+			<div class="font-700">{displayVals.lastReading.time}</div>
 		</div>
-		<div>27-06-25 22:55</div>
 	</div>
 
 	<div class="controls">
 		<div class="d-flex">
-			<button aria-label="Reload">
-				<IconRefresh />
+			<button aria-label="Reload" on:click={() => getData(timeRange)} disabled={loading}>
+				{#if !loading}
+					<IconRefresh />
+				{:else}
+					<IconSpinner class="spin" />
+				{/if}
 			</button>
 
 			<div class="dark-toggle">
 				<input type="checkbox" id="theme-toggle" hidden />
 				<button aria-label="Light / Dark" on:click={toggleTheme}>
 					{#if darkMode}
-						<IconSun />
-					{:else}
 						<IconMoon />
+					{:else}
+						<IconSun />
 					{/if}
 				</button>
 			</div>
 		</div>
 
-		<select>
+		<select bind:value={timeRange} on:change={() => getData(timeRange)}>
 			<option value="" disabled selected>Time range</option>
-			<option value="">Hour</option>
-			<option value="">Day</option>
-			<option value="">Week</option>
-			<option value="">Month</option>
-			<option value="">Year</option>
-			<option value="">All</option>
+			{#each timeRanges as [value, label]}
+				<option {value}>{label}</option>
+			{/each}
 		</select>
 	</div>
 </header>
 
 <main>
-	<section class="charts">
+	<section class="charts {loading ? 'loading' : ''}">
 		<div class="chart-container">
 			<div class="chart-title">
 				<h3>Temperature</h3>
 				<div>
-					<h3>{currTemp}</h3>
+					<div class="high-low">{displayVals.temp.low} &ndash; {displayVals.temp.high}</div>
+					<h3>{displayVals.temp.current}</h3>
 					<span class="font-small">&deg;c</span>
 				</div>
 			</div>
@@ -264,7 +348,8 @@
 			<div class="chart-title">
 				<h3>Humidity</h3>
 				<div>
-					<h3>{currHumid}</h3>
+					<div class="high-low">{displayVals.humidity.low} &ndash; {displayVals.humidity.high}</div>
+					<h3>{displayVals.humidity.current}</h3>
 					<span class="font-small">%</span>
 				</div>
 			</div>
@@ -275,7 +360,8 @@
 			<div class="chart-title">
 				<h3>Pressure</h3>
 				<div>
-					<h3>{currPres}</h3>
+					<div class="high-low">{displayVals.pressure.low} &ndash; {displayVals.pressure.high}</div>
+					<h3>{displayVals.pressure.current}</h3>
 					<span class="font-small">hPa</span>
 				</div>
 			</div>
@@ -286,7 +372,8 @@
 			<div class="chart-title">
 				<h3>Light</h3>
 				<div>
-					<h3>{currLight}</h3>
+					<div class="high-low">{displayVals.light.low} &ndash; {displayVals.light.high}</div>
+					<h3>{displayVals.light.current}</h3>
 					<span class="font-small">lux</span>
 				</div>
 			</div>
