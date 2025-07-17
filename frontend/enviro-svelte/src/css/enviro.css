@@ -28,8 +28,22 @@ body {
 	min-height: 100vh;
 	color: var(--black75);
 	background-color: #eee;
-	transition: color 0.5s, background-color 0.5s;
-	font-family: Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;
+	transition:
+		color 0.5s,
+		background-color 0.5s;
+	font-family:
+		Inter,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Helvetica Neue',
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		'Fira Sans',
+		'Droid Sans',
+		sans-serif;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -49,10 +63,23 @@ h1, h2, h3, h4, h5, h6 {
 button {
 	font-size: 1rem;
 	padding: 0.5rem;
-	color: var(--black75);
+	border: 1px solid transparent;
+	border-radius: 0.5rem;
+	outline: none;
+	color: inherit;
 	background-color: transparent;
 	cursor: pointer;
 	font-family: unset;
+}
+
+button:hover {
+	color: #fff;
+	border-color: var(--white15);
+}
+
+button:active {
+	color: #fff;
+	background-color: var(--white10);
 }
 
 button:disabled {
@@ -101,22 +128,6 @@ footer {
 	background-color: var(--grey-xxd);
 }
 
-button {
-	border: 1px solid transparent;
-	border-radius: 0.25rem;
-	outline: none;
-	color: inherit;
-}
-
-button:hover {
-	border-color: var(--white15);
-}
-
-button:active {
-	color: #fff;
-	background-color: var(--white10);
-}
-
 h1 {
 	font-size: 1.75rem;
 }
@@ -161,10 +172,10 @@ h1 {
 	color: var(--white75);
 	background-color: var(--grey-xd);
 	padding: 0.5rem;
-	img {
+	svg {
 		display: block;
-		width: 1.25rem;
-		height: 1.25rem;
+		width: 1.5rem;
+		height: 1.5rem;
 	}
 	> div {
 		gap: 0.5rem;
