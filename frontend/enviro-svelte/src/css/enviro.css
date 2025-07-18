@@ -98,6 +98,7 @@ select {
 	border-radius: 0.5rem;
 	outline: none;
 	scroll-padding-top: 1rem;
+	cursor: pointer;
 }
 
 select:hover {

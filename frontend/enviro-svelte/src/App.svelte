@@ -1,292 +1,286 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { mainStore, getData, registerCharts, toggleTheme } from './stores/data'
+	import { Chart } from 'chart.js'
 	import LogoRasPi from '/raspi_logo.svg'
-	import IconRefresh from './assets/icons/icon-refresh.svelte'
-	import IconSpinner from './assets/icons/icon-spinner.svelte'
-	import IconSun from './assets/icons/icon-sun.svelte'
-	import IconMoon from './assets/icons/icon-moon.svelte'
-	import IconArrowUp from './assets/icons/icon_arrow-up.svelte'
-	import IconArrowDown from './assets/icons/icon-arrow-down.svelte'
-	import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js'
-	import 'chartjs-adapter-date-fns'
-	import type { ChartConfiguration } from 'chart.js'
-
-	type ChartConfig = ChartConfiguration<'line'>
-	interface DataRecord {
-		unix: number
-		temp: number
-		humidity: number
-		pressure: number
-		light: number
-	}
-	type DataRecordList = DataRecord[]
-	type DataPoint = { x: number; y: number }
-	type DisplayValues = {
-		current: string
-		low: string
-		high: string
-	}
-
-	Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend)
-	Chart.defaults.plugins.legend.display = false
-	Chart.defaults.plugins.tooltip.callbacks.title = function (context) {
-		const date = new Date(context[0].parsed.x)
-		return date
-			.toLocaleString('en-GB', {
-				day: '2-digit',
-				month: 'short',
-				year: 'numeric',
-				hour: '2-digit',
-				minute: '2-digit',
-				hour12: false,
-			})
-			.replace(',', ' -')
-	}
-
-	const api_url = 'http://ras.pi/enviro/api/v1'
-	// const api_url = 'https://api.leeroybrown.uk/enviro'
-	const year = new Date().getFullYear()
-	const timeRanges = [
-		['1hr', 'Hour'],
-		['24hr', 'Day'],
-		['1wk', 'Week'],
-		['1mo', 'Month'],
-		['1yr', 'Year'],
-		['all', 'All'],
-	]
-	let timeRange = ''
-
-	let darkMode = false
-	let loading = false
-
-	const displayVals = {
-		temp: {} as DisplayValues,
-		humidity: {} as DisplayValues,
-		pressure: {} as DisplayValues,
-		light: {} as DisplayValues,
-		lastReading: {
-			date: '',
-			time: '',
-		},
-	}
+	import { IconRefresh, IconSpinner, IconSun, IconMoon, IconArrowUp, IconArrowDown } from './assets/icons/icons'
 
 	let tempCanvas: HTMLCanvasElement
 	let humidCanvas: HTMLCanvasElement
 	let pressCanvas: HTMLCanvasElement
 	let lightCanvas: HTMLCanvasElement
 
-	let charts: {
-		temp?: Chart
-		humidity?: Chart
-		pressure?: Chart
-		light?: Chart
-	} = {}
-
-	// Chart data and configs as you have them, but use reactive `let` if you want
-	// To keep data reactive you can wrap in $: or stores if needed
-
-	const xScaleOptions = {
-		type: 'time' as const,
-		time: {
-			displayFormats: {
-				minute: 'HH:mm',
-				hour: 'HH:mm',
-				day: 'dd MMM',
-				week: 'dd MMM',
-				month: 'MMM',
-			},
-		},
-	}
-
-	const animOptions = {
-		duration: 500,
-	}
-
-	const data = {
-		temp: {
-			datasets: [
-				{
-					label: 'Temperature (°C)',
-					data: [] as DataPoint[],
-					borderColor: 'tomato',
-					tension: 0.3,
-				},
-			],
-		},
-		humidity: {
-			datasets: [
-				{
-					label: 'Humidity (%)',
-					data: [] as DataPoint[],
-					borderColor: 'deepskyblue',
-					tension: 0.3,
-				},
-			],
-		},
-		pressure: {
-			datasets: [
-				{
-					label: 'Pressure (hPa)',
-					data: [] as DataPoint[],
-					borderColor: '#b5c',
-					tension: 0.3,
-				},
-			],
-		},
-		light: {
-			datasets: [
-				{
-					label: 'Light (lux)',
-					data: [] as DataPoint[],
-					borderColor: 'orange',
-					tension: 0.3,
-				},
-			],
-		},
-	}
-
-	const config: Record<'temp' | 'humidity' | 'pressure' | 'light', ChartConfig> = {
-		temp: {
-			type: 'line',
-			data: data.temp,
-			options: {
-				scales: {
-					x: xScaleOptions,
-					y: { grace: '10%' },
-				},
-				animation: animOptions,
-			},
-		},
-		humidity: {
-			type: 'line',
-			data: data.humidity,
-			options: {
-				scales: {
-					x: xScaleOptions,
-					y: { grace: '10%' },
-				},
-				animation: animOptions,
-			},
-		},
-		pressure: {
-			type: 'line',
-			data: data.pressure,
-			options: {
-				scales: {
-					x: xScaleOptions,
-					y: { grace: '10%' },
-				},
-				animation: animOptions,
-			},
-		},
-		light: {
-			type: 'line',
-			data: data.light,
-			options: {
-				scales: {
-					x: xScaleOptions,
-					y: {
-						beginAtZero: true,
-						grace: '10%',
-					},
-				},
-				animation: animOptions,
-			},
-		},
-	}
-
 	onMount(() => {
-		// darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-		// document.documentElement.classList.toggle('dark', darkMode)
+		const tempChart = new Chart(tempCanvas, $mainStore.config.temp)
+		const humidChart = new Chart(humidCanvas, $mainStore.config.humidity)
+		const pressChart = new Chart(pressCanvas, $mainStore.config.pressure)
+		const lightChart = new Chart(lightCanvas, $mainStore.config.light)
 
-		charts = {
-			temp: new Chart(tempCanvas, config.temp),
-			humidity: new Chart(humidCanvas, config.humidity),
-			pressure: new Chart(pressCanvas, config.pressure),
-			light: new Chart(lightCanvas, config.light),
-		}
+		registerCharts(tempChart, humidChart, pressChart, lightChart)
 
 		getData()
 	})
 
-	async function getData(limit?: string) {
-		loading = true
+	// import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js'
+	// import 'chartjs-adapter-date-fns'
 
-		Object.values(data).forEach((chartData) => {
-			chartData.datasets[0].data = []
-		})
-		Object.values(charts).forEach((chart) => chart?.update())
+	// import type { ChartConfig, DataRecordList, DataPoint, DisplayValues } from './types/envirotypes'
 
-		try {
-			const url = limit ? api_url + '?limit=' + limit : api_url
-			const response = await fetch(url)
-			const json: DataRecordList = await response.json()
+	// Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend)
+	// Chart.defaults.plugins.legend.display = false
+	// Chart.defaults.plugins.tooltip.callbacks.title = function (context) {
+	// 	const date = new Date(context[0].parsed.x)
+	// 	return date
+	// 		.toLocaleString('en-GB', {
+	// 			day: '2-digit',
+	// 			month: 'short',
+	// 			year: 'numeric',
+	// 			hour: '2-digit',
+	// 			minute: '2-digit',
+	// 			hour12: false,
+	// 		})
+	// 		.replace(',', ' -')
+	// }
 
-			json.forEach((entry) => {
-				const timestamp = entry.unix * 1000
-				data.temp.datasets[0].data.push({ x: timestamp, y: entry.temp })
-				data.humidity.datasets[0].data.push({ x: timestamp, y: entry.humidity })
-				data.pressure.datasets[0].data.push({ x: timestamp, y: entry.pressure })
-				data.light.datasets[0].data.push({ x: timestamp, y: entry.light })
-			})
+	// const api_url = 'http://ras.pi/enviro/api/v1'
+	// // const api_url = 'https://api.leeroybrown.uk/enviro/v1'
+	// const year = new Date().getFullYear()
+	// const timeRanges = [
+	// 	['1hr', 'Hour'],
+	// 	['24hr', 'Day'],
+	// 	['1wk', 'Week'],
+	// 	['1mo', 'Month'],
+	// 	['1yr', 'Year'],
+	// 	['all', 'All'],
+	// ]
+	// let timeRange = ''
 
-			Object.values(charts).forEach((chart) => chart?.update())
+	// let darkMode = false
+	// let loading = false
 
-			// displayVals.temp.current = json.at(-1)?.temp.toFixed(1) ?? '-'
-			// displayVals.humidity.current = json.at(-1)?.humidity.toFixed(1) ?? '-'
-			// displayVals.pressure.current = json.at(-1)?.pressure.toFixed(1) ?? '-'
-			// displayVals.light.current = json.at(-1)?.light.toFixed(1) ?? '-'
+	// const $mainStore.displayVals = {
+	// 	temp: {} as DisplayValues,
+	// 	humidity: {} as DisplayValues,
+	// 	pressure: {} as DisplayValues,
+	// 	light: {} as DisplayValues,
+	// 	lastReading: {
+	// 		date: '',
+	// 		time: '',
+	// 	},
+	// }
 
-			displayVals.temp = {
-				current: json.at(-1)?.temp.toFixed(1) ?? '-',
-				...getLowHigh(json.map((d) => d.temp)),
-			}
+	// let tempCanvas: HTMLCanvasElement
+	// let humidCanvas: HTMLCanvasElement
+	// let pressCanvas: HTMLCanvasElement
+	// let lightCanvas: HTMLCanvasElement
 
-			displayVals.humidity = {
-				current: json.at(-1)?.humidity.toFixed(1) ?? '-',
-				...getLowHigh(json.map((d) => d.humidity)),
-			}
+	// let charts: {
+	// 	temp?: Chart
+	// 	humidity?: Chart
+	// 	pressure?: Chart
+	// 	light?: Chart
+	// } = {}
 
-			displayVals.pressure = {
-				current: json.at(-1)?.pressure.toFixed(1) ?? '-',
-				...getLowHigh(json.map((d) => d.pressure)),
-			}
+	// Chart data and configs as you have them, but use reactive `let` if you want
+	// To keep data reactive you can wrap in $: or stores if needed
 
-			displayVals.light = {
-				current: json.at(-1)?.light.toFixed(1) ?? '-',
-				...getLowHigh(json.map((d) => d.light)),
-			}
+	// const xScaleOptions = {
+	// 	type: 'time' as const,
+	// 	time: {
+	// 		displayFormats: {
+	// 			minute: 'HH:mm',
+	// 			hour: 'HH:mm',
+	// 			day: 'dd MMM',
+	// 			week: 'dd MMM',
+	// 			month: 'MMM',
+	// 		},
+	// 	},
+	// }
 
-			const latestTimestamp = json.at(-1)?.unix
+	// const animOptions = {
+	// 	duration: 500,
+	// }
 
-			if (latestTimestamp) {
-				const dateObj = new Date(latestTimestamp * 1000) // assuming timestamp is in seconds
-				displayVals.lastReading.date = dateObj.toLocaleDateString() // e.g. "17/07/2025"
-				displayVals.lastReading.time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) // e.g. "14:30"
-			} else {
-				displayVals.lastReading.date = '-'
-				displayVals.lastReading.time = '-'
-			}
-		} catch (error) {
-			console.error(error)
-		} finally {
-			loading = false
-		}
-	}
+	// const data = {
+	// 	temp: {
+	// 		datasets: [
+	// 			{
+	// 				label: 'Temperature (°C)',
+	// 				data: [] as DataPoint[],
+	// 				borderColor: 'tomato',
+	// 				tension: 0.3,
+	// 			},
+	// 		],
+	// 	},
+	// 	humidity: {
+	// 		datasets: [
+	// 			{
+	// 				label: 'Humidity (%)',
+	// 				data: [] as DataPoint[],
+	// 				borderColor: 'deepskyblue',
+	// 				tension: 0.3,
+	// 			},
+	// 		],
+	// 	},
+	// 	pressure: {
+	// 		datasets: [
+	// 			{
+	// 				label: 'Pressure (hPa)',
+	// 				data: [] as DataPoint[],
+	// 				borderColor: '#b5c',
+	// 				tension: 0.3,
+	// 			},
+	// 		],
+	// 	},
+	// 	light: {
+	// 		datasets: [
+	// 			{
+	// 				label: 'Light (lux)',
+	// 				data: [] as DataPoint[],
+	// 				borderColor: 'orange',
+	// 				tension: 0.3,
+	// 			},
+	// 		],
+	// 	},
+	// }
 
-	function getLowHigh(arr: number[]): { low: string; high: string } {
-		const min = Math.min(...arr)
-		const max = Math.max(...arr)
-		return {
-			low: min === 0 ? min.toString() : min.toFixed(1),
-			high: max.toFixed(1),
-		}
-	}
+	// const config: Record<'temp' | 'humidity' | 'pressure' | 'light', ChartConfig> = {
+	// 	temp: {
+	// 		type: 'line',
+	// 		data: data.temp,
+	// 		options: {
+	// 			scales: {
+	// 				x: xScaleOptions,
+	// 				y: { grace: '10%' },
+	// 			},
+	// 			animation: animOptions,
+	// 		},
+	// 	},
+	// 	humidity: {
+	// 		type: 'line',
+	// 		data: data.humidity,
+	// 		options: {
+	// 			scales: {
+	// 				x: xScaleOptions,
+	// 				y: { grace: '10%' },
+	// 			},
+	// 			animation: animOptions,
+	// 		},
+	// 	},
+	// 	pressure: {
+	// 		type: 'line',
+	// 		data: data.pressure,
+	// 		options: {
+	// 			scales: {
+	// 				x: xScaleOptions,
+	// 				y: { grace: '10%' },
+	// 			},
+	// 			animation: animOptions,
+	// 		},
+	// 	},
+	// 	light: {
+	// 		type: 'line',
+	// 		data: data.light,
+	// 		options: {
+	// 			scales: {
+	// 				x: xScaleOptions,
+	// 				y: {
+	// 					beginAtZero: true,
+	// 					grace: '10%',
+	// 				},
+	// 			},
+	// 			animation: animOptions,
+	// 		},
+	// 	},
+	// }
 
-	function toggleTheme() {
-		darkMode = !darkMode
-		document.documentElement.classList.toggle('dark', darkMode)
-	}
+	// onMount(() => {
+	// 	// darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+	// 	// document.documentElement.classList.toggle('dark', darkMode)
+
+	// 	charts = {
+	// 		temp: new Chart(tempCanvas, config.temp),
+	// 		humidity: new Chart(humidCanvas, config.humidity),
+	// 		pressure: new Chart(pressCanvas, config.pressure),
+	// 		light: new Chart(lightCanvas, config.light),
+	// 	}
+
+	// 	getData()
+	// })
+
+	// async function getData(limit?: string) {
+	// 	loading = true
+
+	// 	Object.values(data).forEach((chartData) => {
+	// 		chartData.datasets[0].data = []
+	// 	})
+	// 	Object.values(charts).forEach((chart) => chart?.update())
+
+	// 	try {
+	// 		const url = limit ? api_url + '?limit=' + limit : api_url
+	// 		const response = await fetch(url)
+	// 		const json: DataRecordList = await response.json()
+
+	// 		json.forEach((entry) => {
+	// 			const timestamp = entry.unix * 1000
+	// 			data.temp.datasets[0].data.push({ x: timestamp, y: entry.temp })
+	// 			data.humidity.datasets[0].data.push({ x: timestamp, y: entry.humidity })
+	// 			data.pressure.datasets[0].data.push({ x: timestamp, y: entry.pressure })
+	// 			data.light.datasets[0].data.push({ x: timestamp, y: entry.light })
+	// 		})
+
+	// 		Object.values(charts).forEach((chart) => chart?.update())
+
+	// 		displayVals.temp = {
+	// 			current: json.at(-1)?.temp.toFixed(1) ?? '-',
+	// 			...getLowHigh(json.map((d) => d.temp)),
+	// 		}
+
+	// 		displayVals.humidity = {
+	// 			current: json.at(-1)?.humidity.toFixed(1) ?? '-',
+	// 			...getLowHigh(json.map((d) => d.humidity)),
+	// 		}
+
+	// 		displayVals.pressure = {
+	// 			current: json.at(-1)?.pressure.toFixed(1) ?? '-',
+	// 			...getLowHigh(json.map((d) => d.pressure)),
+	// 		}
+
+	// 		displayVals.light = {
+	// 			current: json.at(-1)?.light.toFixed(1) ?? '-',
+	// 			...getLowHigh(json.map((d) => d.light)),
+	// 		}
+
+	// 		const latestTimestamp = json.at(-1)?.unix
+
+	// 		if (latestTimestamp) {
+	// 			const dateObj = new Date(latestTimestamp * 1000)
+	// 			displayVals.lastReading.date = dateObj.toLocaleDateString()
+	// 			displayVals.lastReading.time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	// 		} else {
+	// 			displayVals.lastReading.date = '-'
+	// 			displayVals.lastReading.time = '-'
+	// 		}
+	// 	} catch (error) {
+	// 		console.error(error)
+	// 	} finally {
+	// 		loading = false
+	// 	}
+	// }
+
+	// function getLowHigh(arr: number[]): { low: string; high: string } {
+	// 	const min = Math.min(...arr)
+	// 	const max = Math.max(...arr)
+	// 	return {
+	// 		low: min === 0 ? min.toString() : min.toFixed(1),
+	// 		high: max.toFixed(1),
+	// 	}
+	// }
+
+	// function toggleTheme() {
+	// 	darkMode = !darkMode
+	// 	document.documentElement.classList.toggle('dark', darkMode)
+	// }
 </script>
 
 <header class="shadow">
@@ -296,15 +290,15 @@
 			<h1>PiZero Enviro</h1>
 		</a>
 		<div class="d-flex ai-center">
-			<div class="header-date mr-3">{displayVals.lastReading.date}</div>
-			<div class="font-700">{displayVals.lastReading.time}</div>
+			<div class="header-date mr-3">{$mainStore.displayVals.lastReading.date}</div>
+			<div class="font-700">{$mainStore.displayVals.lastReading.time}</div>
 		</div>
 	</div>
 
 	<div class="controls">
 		<div class="d-flex">
-			<button aria-label="Reload" on:click={() => getData(timeRange)} disabled={loading}>
-				{#if !loading}
+			<button aria-label="Reload" on:click={() => getData($mainStore.timeRange)} disabled={$mainStore.loading}>
+				{#if !$mainStore.loading}
 					<IconRefresh />
 				{:else}
 					<IconSpinner class="spin" />
@@ -314,7 +308,7 @@
 			<div class="dark-toggle">
 				<input type="checkbox" id="theme-toggle" hidden />
 				<button aria-label="Light / Dark" on:click={toggleTheme}>
-					{#if darkMode}
+					{#if $mainStore.darkMode}
 						<IconMoon />
 					{:else}
 						<IconSun />
@@ -323,9 +317,9 @@
 			</div>
 		</div>
 
-		<select name="time-range" bind:value={timeRange} on:change={() => getData(timeRange)}>
+		<select name="time-range" bind:value={$mainStore.timeRange} on:change={() => getData($mainStore.timeRange)}>
 			<option value="" disabled>Time range</option>
-			{#each timeRanges as [value, label]}
+			{#each $mainStore.timeRanges as [value, label]}
 				<option {value}>{label}</option>
 			{/each}
 		</select>
@@ -333,17 +327,17 @@
 </header>
 
 <main>
-	<section class="charts {loading ? 'loading' : ''}">
+	<section class="charts {$mainStore.loading ? 'loading' : ''}">
 		<div class="chart-container">
 			<div class="chart-title">
 				<h3>Temperature</h3>
 				<div>
 					<div class="high-low">
 						<IconArrowDown />
-						{displayVals.temp.low} &mdash; {displayVals.temp.high}
+						{$mainStore.displayVals.temp.low} &mdash; {$mainStore.displayVals.temp.high}
 						<IconArrowUp />
 					</div>
-					<h3>{displayVals.temp.current}</h3>
+					<h3>{$mainStore.displayVals.temp.current}</h3>
 					<span class="font-small">&deg;c</span>
 				</div>
 			</div>
@@ -356,10 +350,10 @@
 				<div>
 					<div class="high-low">
 						<IconArrowDown />
-						{displayVals.humidity.low} &mdash; {displayVals.humidity.high}
+						{$mainStore.displayVals.humidity.low} &mdash; {$mainStore.displayVals.humidity.high}
 						<IconArrowUp />
 					</div>
-					<h3>{displayVals.humidity.current}</h3>
+					<h3>{$mainStore.displayVals.humidity.current}</h3>
 					<span class="font-small">%</span>
 				</div>
 			</div>
@@ -372,10 +366,10 @@
 				<div>
 					<div class="high-low">
 						<IconArrowDown />
-						{displayVals.pressure.low} &mdash; {displayVals.pressure.high}
+						{$mainStore.displayVals.pressure.low} &mdash; {$mainStore.displayVals.pressure.high}
 						<IconArrowUp />
 					</div>
-					<h3>{displayVals.pressure.current}</h3>
+					<h3>{$mainStore.displayVals.pressure.current}</h3>
 					<span class="font-small">hPa</span>
 				</div>
 			</div>
@@ -388,10 +382,10 @@
 				<div>
 					<div class="high-low">
 						<IconArrowDown />
-						{displayVals.light.low} &mdash; {displayVals.light.high}
+						{$mainStore.displayVals.light.low} &mdash; {$mainStore.displayVals.light.high}
 						<IconArrowUp />
 					</div>
-					<h3>{displayVals.light.current}</h3>
+					<h3>{$mainStore.displayVals.light.current}</h3>
 					<span class="font-small">lux</span>
 				</div>
 			</div>
@@ -401,5 +395,5 @@
 </main>
 
 <footer>
-	<div>&copy; {year} Lee Taylor</div>
+	<div>&copy; {$mainStore.year} Lee Taylor</div>
 </footer>
