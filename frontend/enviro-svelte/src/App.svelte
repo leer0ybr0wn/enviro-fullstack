@@ -289,7 +289,7 @@
 	}
 </script>
 
-<header>
+<header class="shadow">
 	<div class="d-flex jc-between ai-center px-4 py-5">
 		<a href="." class="d-flex ai-center">
 			<img src={LogoRasPi} alt="Raspberry Pi logo" width="18" class="mr-3" />
