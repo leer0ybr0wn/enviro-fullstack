@@ -1,7 +1,6 @@
 <?php
 header("Access-Control-Allow-Headers: Content-Type, X-Api-Key");
 
-$cred = json_decode(file_get_contents('/home/lee/enviro/credentials.json'), true);
 $db_name = $cred['db_name'];
 $db_user = $cred['db_user'];
 $db_pass = $cred['db_pass'];

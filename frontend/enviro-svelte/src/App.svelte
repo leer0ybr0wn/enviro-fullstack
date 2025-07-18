@@ -5,6 +5,8 @@
 	import IconSpinner from './assets/icons/icon-spinner.svelte'
 	import IconSun from './assets/icons/icon-sun.svelte'
 	import IconMoon from './assets/icons/icon-moon.svelte'
+	import IconArrowUp from './assets/icons/icon_arrow-up.svelte'
+	import IconArrowDown from './assets/icons/icon-arrow-down.svelte'
 	import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js'
 	import 'chartjs-adapter-date-fns'
 	import type { ChartConfiguration } from 'chart.js'
@@ -276,7 +278,7 @@
 		const min = Math.min(...arr)
 		const max = Math.max(...arr)
 		return {
-			low: min.toFixed(1),
+			low: min === 0 ? min.toString() : min.toFixed(1),
 			high: max.toFixed(1),
 		}
 	}
@@ -321,8 +323,8 @@
 			</div>
 		</div>
 
-		<select bind:value={timeRange} on:change={() => getData(timeRange)}>
-			<option value="" disabled selected>Time range</option>
+		<select name="time-range" bind:value={timeRange} on:change={() => getData(timeRange)}>
+			<option value="" disabled>Time range</option>
 			{#each timeRanges as [value, label]}
 				<option {value}>{label}</option>
 			{/each}
@@ -336,7 +338,11 @@
 			<div class="chart-title">
 				<h3>Temperature</h3>
 				<div>
-					<div class="high-low">{displayVals.temp.low} &ndash; {displayVals.temp.high}</div>
+					<div class="high-low">
+						<IconArrowDown />
+						{displayVals.temp.low} &mdash; {displayVals.temp.high}
+						<IconArrowUp />
+					</div>
 					<h3>{displayVals.temp.current}</h3>
 					<span class="font-small">&deg;c</span>
 				</div>
@@ -348,7 +354,11 @@
 			<div class="chart-title">
 				<h3>Humidity</h3>
 				<div>
-					<div class="high-low">{displayVals.humidity.low} &ndash; {displayVals.humidity.high}</div>
+					<div class="high-low">
+						<IconArrowDown />
+						{displayVals.humidity.low} &mdash; {displayVals.humidity.high}
+						<IconArrowUp />
+					</div>
 					<h3>{displayVals.humidity.current}</h3>
 					<span class="font-small">%</span>
 				</div>
@@ -360,7 +370,11 @@
 			<div class="chart-title">
 				<h3>Pressure</h3>
 				<div>
-					<div class="high-low">{displayVals.pressure.low} &ndash; {displayVals.pressure.high}</div>
+					<div class="high-low">
+						<IconArrowDown />
+						{displayVals.pressure.low} &mdash; {displayVals.pressure.high}
+						<IconArrowUp />
+					</div>
 					<h3>{displayVals.pressure.current}</h3>
 					<span class="font-small">hPa</span>
 				</div>
@@ -372,7 +386,11 @@
 			<div class="chart-title">
 				<h3>Light</h3>
 				<div>
-					<div class="high-low">{displayVals.light.low} &ndash; {displayVals.light.high}</div>
+					<div class="high-low">
+						<IconArrowDown />
+						{displayVals.light.low} &mdash; {displayVals.light.high}
+						<IconArrowUp />
+					</div>
 					<h3>{displayVals.light.current}</h3>
 					<span class="font-small">lux</span>
 				</div>
