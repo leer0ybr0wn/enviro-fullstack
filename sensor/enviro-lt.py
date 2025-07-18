@@ -18,9 +18,6 @@ from smbus2 import SMBus
 import requests
 
 
-data_url = 'http://ras.pi/enviro/api/v1'
-# data_url = 'https://api.leeroybrown.uk/enviro/v1'
-
 current_dir = os.path.dirname(os.path.realpath(__file__))
 cred_path = os.path.join(current_dir, "credentials.json")
 with open(cred_path, "r") as f:
@@ -210,12 +207,20 @@ def send_data_to_server(data):
         "Content-Type": "application/json",
         "X-Api-Key": api_key
     }
-    try:
-        response = requests.post(data_url, json=data, headers=headers, timeout=5)
-        response.raise_for_status()
-        print("Data sent:", response.status_code)
-    except requests.RequestException as e:
-        print("Failed to send data:", e)
+
+    urls = [
+        "https://api.leeroybrown.uk/enviro/v1",
+        "http://ras.pi/enviro/api/v1"
+    ]
+
+    for url in urls:
+        try:
+            response = requests.post(url, json=data, headers=headers, timeout=5)
+            response.raise_for_status()
+            print(f"Data sent to {url}: {response.status_code}")
+        except requests.RequestException as e:
+            print(f"Failed to send data to {url}:", e)
+
 
 
 # Initialise the LCD

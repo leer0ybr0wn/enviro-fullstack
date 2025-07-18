@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
 $method = $_SERVER['REQUEST_METHOD'];
-$cred = json_decode(file_get_contents('/home/lee/enviro/credentials.json'), true);
+$cred = json_decode(file_get_contents('/etc/enviro/credentials.json'), true);
 
 if (!$cred) {
     http_response_code(500);
