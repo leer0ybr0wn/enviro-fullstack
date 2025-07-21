@@ -190,12 +190,9 @@ export async function getData(limit?: string) {
 	}
 }
 
-export function registerCharts(tempChart: Chart, humidChart: Chart, pressChart: Chart, lightChart: Chart) {
+export function registerChart(key: 'temp' | 'humidity' | 'pressure' | 'light', chart: Chart) {
 	mainStore.update((state) => {
-		state.charts.temp = tempChart
-		state.charts.humidity = humidChart
-		state.charts.pressure = pressChart
-		state.charts.light = lightChart
+		state.charts[key] = chart
 		return state
 	})
 }

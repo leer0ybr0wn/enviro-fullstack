@@ -114,7 +114,7 @@ def get_cpu_temperature():
 def correct_humidity(humidity, temperature, corr_temperature):
     dewpoint = corr_temperature - ((100 - humidity) / 5)
     # corr_humidity = 100 - (5 * (corr_temperature - dewpoint)) + humidity_offset
-    corr_humidity = 100 - (4 * (corr_temperature - dewpoint))
+    corr_humidity = 100 - (3.8 * (corr_temperature - dewpoint))
     return max(0, min(100, corr_humidity))
 
 
