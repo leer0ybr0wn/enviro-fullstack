@@ -1,10 +1,10 @@
 import { writable } from 'svelte/store'
-import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js'
+import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend, Filler } from 'chart.js'
 import 'chartjs-adapter-date-fns'
 import type { ChartConfig, DataRecordList, DataPoint, DisplayValues } from '../types/envirotypes'
 
 // Register Chart.js components
-Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend)
+Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend, Filler)
 Chart.defaults.plugins.legend.display = false
 Chart.defaults.plugins.tooltip.callbacks.title = (context) => {
 	const date = new Date(context[0].parsed.x)
@@ -41,10 +41,10 @@ const animOptions = {
 }
 
 const data = {
-	temp: { datasets: [{ data: [] as DataPoint[], label: 'Temperature (°C)', borderColor: 'tomato', tension: 0.3 }] },
-	humidity: { datasets: [{ data: [] as DataPoint[], label: 'Humidity (%)', borderColor: 'deepskyblue', tension: 0.3 }] },
-	pressure: { datasets: [{ data: [] as DataPoint[], label: 'Pressure (hPa)', borderColor: '#b5c', tension: 0.3 }] },
-	light: { datasets: [{ data: [] as DataPoint[], label: 'Light (lux)', borderColor: 'orange', tension: 0.3 }] },
+	temp: { datasets: [{ data: [] as DataPoint[], label: 'Temperature (°C)', borderColor: '#c22', backgroundColor: '#cc222225', fill: true, tension: 0.3 }] },
+	humidity: { datasets: [{ data: [] as DataPoint[], label: 'Humidity (%)', borderColor: '#25c', backgroundColor: '#2255cc25', fill: true, tension: 0.3 }] },
+	pressure: { datasets: [{ data: [] as DataPoint[], label: 'Pressure (hPa)', borderColor: '#94b', backgroundColor: '#9944bb25', fill: true, tension: 0.3 }] },
+	light: { datasets: [{ data: [] as DataPoint[], label: 'Light (lux)', borderColor: '#2ae', backgroundColor: '#22aaee25', fill: true, tension: 0.3 }] },
 }
 
 const config = {
