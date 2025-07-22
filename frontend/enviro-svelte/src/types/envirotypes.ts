@@ -12,7 +12,10 @@ export interface DataRecord {
 
 export type DataRecordList = DataRecord[]
 
-export type DataPoint = { x: number; y: number }
+export type DataPoint = {
+	x: number
+	y: number
+}
 
 export type DisplayValues = {
 	current: string

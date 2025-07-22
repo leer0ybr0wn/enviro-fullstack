@@ -26,7 +26,7 @@
 		<div>
 			<div class="high-low">
 				<IconArrowDown />
-				{low} &mdash; {high}
+				{low} &ndash; {high}
 				<IconArrowUp />
 			</div>
 			<h3>{current}</h3>
@@ -35,3 +35,42 @@
 	</div>
 	<canvas class="chart" bind:this={canvasEl}></canvas>
 </div>
+
+<style>
+	.chart {
+		max-height: calc(100vh - 2rem);
+		width: 100%;
+		height: 20rem;
+	}
+
+	.chart-title {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+	}
+
+	.chart-title > div {
+		display: flex;
+		align-items: baseline;
+	}
+
+	.chart-title .font-small {
+		opacity: 0.75;
+		margin-left: 0.25rem;
+	}
+
+	.high-low {
+		display: flex;
+		align-items: center;
+		font-size: 14px;
+		opacity: 0.8;
+		padding: 3px 1px 2px 1px;
+		border-radius: 4px;
+		border: solid 1px var(--black25);
+		margin-right: 0.75rem;
+	}
+
+	:global(.dark .high-low) {
+		border-color: var(--white20);
+	}
+</style>

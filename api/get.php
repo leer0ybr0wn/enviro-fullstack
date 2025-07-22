@@ -24,7 +24,7 @@ $param = $_GET['limit'] ?? '24hr';
 
 $intervals = [
     '1hr'  => ['seconds' => 3600,     'step' => 60],    // 1 min
-    '24hr' => ['seconds' => 86400,    'step' => 600],   // 10 min
+    '24hr' => ['seconds' => 86400,    'step' => 900],   // 15 min
     '1wk'  => ['seconds' => 604800,   'step' => 3600],  // 1 hr
     '1mo'  => ['seconds' => 2592000,  'step' => 10800], // 3 hrs
     '1yr'  => ['seconds' => 31536000, 'step' => 21600], // 6 hrs

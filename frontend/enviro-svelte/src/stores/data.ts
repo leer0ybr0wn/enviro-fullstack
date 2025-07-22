@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store'
 import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend, Filler } from 'chart.js'
 import 'chartjs-adapter-date-fns'
+import type { ScriptableContext } from 'chart.js'
 import type { ChartConfig, DataRecordList, DataPoint, DisplayValues } from '../types/envirotypes'
 
-// Register Chart.js components
 Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend, Filler)
 Chart.defaults.plugins.legend.display = false
 Chart.defaults.plugins.tooltip.callbacks.title = (context) => {
@@ -19,9 +19,19 @@ Chart.defaults.plugins.tooltip.callbacks.title = (context) => {
 		})
 		.replace(',', ' -')
 }
+Chart.defaults.plugins.tooltip.callbacks.label = (context) => {
+	return ' ' + context.formattedValue + ' ' + context.dataset.label
+}
+Chart.defaults.plugins.tooltip.titleFont = {
+	weight: 'normal',
+}
+Chart.defaults.plugins.tooltip.bodyFont = {
+	weight: 'bold',
+	size: 15,
+}
 
-const api_url = 'http://ras.pi/enviro/api/v1'
-// const api_url = 'https://api.leeroybrown.uk/enviro/v1'
+// const api_url = 'http://ras.pi/enviro/api/v1'
+const api_url = 'https://api.leeroybrown.uk/enviro/v1'
 
 const xScaleOptions = {
 	type: 'time' as const,
@@ -40,11 +50,62 @@ const animOptions = {
 	duration: 500,
 }
 
+const colors = {
+	temp: '#cc2222',
+	humid: '#2255cc',
+	press: '#22aaee',
+	light: '#9944bb',
+}
+
 const data = {
-	temp: { datasets: [{ data: [] as DataPoint[], label: 'Temperature (°C)', borderColor: '#c22', backgroundColor: '#cc222225', fill: true, tension: 0.3 }] },
-	humidity: { datasets: [{ data: [] as DataPoint[], label: 'Humidity (%)', borderColor: '#25c', backgroundColor: '#2255cc25', fill: true, tension: 0.3 }] },
-	pressure: { datasets: [{ data: [] as DataPoint[], label: 'Pressure (hPa)', borderColor: '#94b', backgroundColor: '#9944bb25', fill: true, tension: 0.3 }] },
-	light: { datasets: [{ data: [] as DataPoint[], label: 'Light (lux)', borderColor: '#2ae', backgroundColor: '#22aaee25', fill: true, tension: 0.3 }] },
+	temp: {
+		datasets: [
+			{
+				data: [] as DataPoint[],
+				label: '°c',
+				borderColor: colors.temp,
+				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.temp, ctx),
+				fill: true,
+				tension: 0.3,
+			},
+		],
+	},
+	humidity: {
+		datasets: [
+			{
+				data: [] as DataPoint[],
+				label: '%',
+				borderColor: colors.humid,
+				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.humid, ctx),
+				fill: true,
+				tension: 0.3,
+			},
+		],
+	},
+	pressure: {
+		datasets: [
+			{
+				data: [] as DataPoint[],
+				label: 'hPa',
+				borderColor: colors.press,
+				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.press, ctx),
+				fill: true,
+				tension: 0.3,
+			},
+		],
+	},
+	light: {
+		datasets: [
+			{
+				data: [] as DataPoint[],
+				label: 'lux',
+				borderColor: colors.light,
+				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.light, ctx),
+				fill: true,
+				tension: 0.3,
+			},
+		],
+	},
 }
 
 const config = {
@@ -96,6 +157,17 @@ const config = {
 		},
 	},
 } as Record<'temp' | 'humidity' | 'pressure' | 'light', ChartConfig>
+
+function createGradient(base: string, ctx: ScriptableContext<'line'>) {
+	const chart = ctx.chart
+	const { ctx: canvasCtx, chartArea } = chart
+	if (!chartArea) return base + '25'
+	const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+	gradient.addColorStop(0, base + '60')
+	gradient.addColorStop(1, base + '15')
+
+	return gradient
+}
 
 export const mainStore = writable({
 	data,
