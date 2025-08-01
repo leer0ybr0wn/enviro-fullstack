@@ -65,6 +65,10 @@ const data = {
 				label: '°c',
 				borderColor: colors.temp,
 				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.temp, ctx),
+				pointBackgroundColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.temp, ctx),
+				pointBorderColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.temp, ctx),
+				pointHoverBackgroundColor: '#fffa',
+				pointHoverBorderColor: colors.temp,
 				fill: true,
 				tension: 0.3,
 			},
@@ -77,6 +81,10 @@ const data = {
 				label: '%',
 				borderColor: colors.humid,
 				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.humid, ctx),
+				pointBackgroundColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.humid, ctx),
+				pointBorderColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.humid, ctx),
+				pointHoverBackgroundColor: '#fffa',
+				pointHoverBorderColor: colors.humid,
 				fill: true,
 				tension: 0.3,
 			},
@@ -89,6 +97,10 @@ const data = {
 				label: 'hPa',
 				borderColor: colors.press,
 				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.press, ctx),
+				pointBackgroundColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.press, ctx),
+				pointBorderColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.press, ctx),
+				pointHoverBackgroundColor: '#fffa',
+				pointHoverBorderColor: colors.press,
 				fill: true,
 				tension: 0.3,
 			},
@@ -101,6 +113,10 @@ const data = {
 				label: 'lux',
 				borderColor: colors.light,
 				backgroundColor: (ctx: ScriptableContext<'line'>) => createGradient(colors.light, ctx),
+				pointBackgroundColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.light, ctx),
+				pointBorderColor: (ctx: ScriptableContext<'line'>) => pointColors(colors.light, ctx),
+				pointHoverBackgroundColor: '#fffa',
+				pointHoverBorderColor: colors.light,
 				fill: true,
 				tension: 0.3,
 			},
@@ -167,6 +183,12 @@ function createGradient(base: string, ctx: ScriptableContext<'line'>) {
 	gradient.addColorStop(1, base + '15')
 
 	return gradient
+}
+
+function pointColors(base: string, ctx: ScriptableContext<'line'>) {
+	const index = ctx.dataIndex
+	const total = ctx.chart.data.datasets[ctx.datasetIndex].data.length
+	return index === total - 1 ? base : base + '00'
 }
 
 export const mainStore = writable({
