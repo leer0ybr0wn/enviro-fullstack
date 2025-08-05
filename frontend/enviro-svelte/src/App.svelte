@@ -59,9 +59,9 @@
 				<input type="checkbox" id="theme-toggle" hidden />
 				<button aria-label="Light / Dark" on:click={toggleTheme}>
 					{#if $mainStore.darkMode}
-						<IconMoon />
-					{:else}
 						<IconSun />
+					{:else}
+						<IconMoon />
 					{/if}
 				</button>
 			</div>
