@@ -10,21 +10,25 @@
 			key: 'temp',
 			title: 'Temperature',
 			unit: '°c',
+			initExpanded: true,
 		},
 		{
 			key: 'humidity',
 			title: 'Humidity',
 			unit: '%',
+			initExpanded: true,
 		},
 		{
 			key: 'pressure',
 			title: 'Pressure',
 			unit: 'hPa',
+			initExpanded: false,
 		},
 		{
 			key: 'light',
 			title: 'Light',
 			unit: 'lux',
+			initExpanded: false,
 		},
 	] as const
 
@@ -78,7 +82,7 @@
 
 <main>
 	<section class="charts {$mainStore.loading ? 'loading' : ''}">
-		{#each chartItems as { key, title, unit }}
+		{#each chartItems as { key, title, unit, initExpanded }}
 			<ChartCard
 				{title}
 				{unit}
@@ -87,6 +91,8 @@
 				high={$mainStore.displayVals[key].high}
 				current={$mainStore.displayVals[key].current}
 				dataKey={key}
+				loading={$mainStore.loading}
+				{initExpanded}
 			/>
 		{/each}
 	</section>
